@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Reddit Clone</title>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f6f7f8;
+    }
+
+    header {
+        background-color: #ff4500;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+    }
+
+    header .logo {
+        display: flex;
+        align-items: center;
+    }
+
+    header .logo img {
+        width: 40px;
+        margin-right: 10px;
+    }
+
+    header .logo h1 {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    header .logo a {
+        text-decoration: none;
+        color: white;
+    }
+
+    nav ul {
+        list-style: none;
+        display: flex;
+    }
+
+    nav ul li {
+        margin-right: 15px;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+    }
+
+    main {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .intro {
+        margin-bottom: 30px;
+    }
+
+    .intro h2 {
+        font-size: 36px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .intro p {
+        font-size: 18px;
+        color: #555;
+    }
+
+    .content h2 {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .content p {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    .features h2 {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .features ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .features ul li {
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #555;
+    }
+
+    .features ul li strong {
+        font-weight: bold;
+    }
+
+    .call-to-action {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .call-to-action h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .call-to-action p {
+        margin-bottom: 20px;
+    }
+
+    .call-to-action button {
+        padding: 10px 20px;
+        margin: 5px;
+        background-color: #ff4500;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    footer {
+        background-color: #ffffff;
+        padding: 20px;
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    footer ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    footer ul li {
+        margin-right: 15px;
+    }
+
+    footer ul li a {
+        text-decoration: none;
+        color: #ff4500;
+        font-weight: bold;
+    }
+
+    footer p {
+        color: #666;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png" alt="Reddit Logo">
+    <h1><a href="#">Reddit</a></h1>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Popular</a></li>
+      <li><a href="#">All</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Help</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <section class="intro">
+    <h2>About Reddit</h2>
+    <p>Reddit is a network of communities where people can dive into their interests, hobbies, and passions. Each community is a place to dive deeper into topics and engage with like-minded individuals.</p>
+  </section>
+
+  <section class="content">
+    <h2>Our Mission</h2>
+    <p>Our mission is to bring community and belonging to everyone in the world. Whether you're into gaming, sports, news, movies, or something as specific as water rockets, there's a community for you on Reddit.</p>
+  </section>
+
+  <section class="features">
+    <h2>Key Features</h2>
+    <ul>
+      <li><strong>Communities:</strong> Thousands of communities covering every topic imaginable.</li>
+      <li><strong>Voting:</strong> Reddit uses a voting system to highlight the best content.</li>
+      <li><strong>Karma:</strong> Users earn karma points for quality posts and comments.</li>
+      <li><strong>Moderation:</strong> Subreddits are moderated by volunteers, ensuring quality content and conversation.</li>
+    </ul>
+  </section>
+
+  <section class="call-to-action">
+    <h2>Join Reddit Today</h2>
+    <p>Sign up today and start exploring thousands of communities!</p>
+    <button>Sign Up</button>
+    <button>Log In</button>
+  </section>
+</main>
+
+<footer>
+  <ul>
+    <li><a href="#">Terms</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Advertise</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <p>&copy; 2024 Reddit Clone - For Educational Purposes Only</p>
+</footer>
+</body>
+</html>

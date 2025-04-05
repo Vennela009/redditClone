@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <style>
+        *
+        {
+            box-sizing:border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-bottom:0.5px solid lightgray;
+            color: white;
+            padding: 10px 20px;
+            height: 60px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-left, .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .site-name {
+            font-size: 1.5em;
+            margin-right: 20px;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 8px;
+        }
+        .password-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+
+        .password-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+
+        .password-container .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: black;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input, select {
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            background-color: #FF4500;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #FF5722;;
+        }
+
+        span {
+            color: red;
+            font-size: 12px;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                width: 90%;
+            }
+        }
+        .password-content{
+            display:flex;
+
+        }
+        .password-content i{
+            margin-top :8px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-left">
+        <img src="/logo/reddit.png" alt="Logo" class="logo">
+    </div>
+</nav>
+<div class="container">
+    <h2>Register Form</h2>
+    <form id="registerForm" th:action="@{/user/submit}" th:object="${userRegistrationInfo}" method="post">
+        <div>
+            <label for="username">Name:</label>
+            <input type="text" id="username" name="username" th:field="*{username}" required minlength="3">
+            <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red;"></span>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" th:field="*{email}" required>
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red;"></span>
+        </div>
+        <div class="password-container">
+            <label for="password">Password:</label>
+            <div class="password-content">
+                <input type="password" id="password" name="password" th:field="*{password}" required>
+                <i class="fas fa-eye toggle-password" onclick="togglePassword('password')"></i>
+            </div>
+        </div>
+        <div class="password-container">
+            <label for="confirmpassword">Confirm Password:</label>
+            <div class="password-content">
+                <input type="password" id="confirmpassword" name="confirmpassword" required>
+                <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmpassword')"></i>
+            </div>
+        </div>
+        <div>
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" th:field="*{gender}">
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+            </select>
+        </div>
+        <div>
+            <label for="age">Age:</label>
+            <input id="age" type="number" name="age" placeholder="Age" th:field="*{age}" required min="16" max="100">
+        </div>
+        <div>
+            <label for="userInfo">About user :</label>
+            <input type="text" id="userInfo" name="userInfo" th:field="*{userInfo}" required>
+        </div>
+        <p>Already have an account? <a href="/showLoginPage">Login</a></p>
+        <input type="submit" value="REGISTER">
+    </form>
+</div>
+<script>
+    function togglePassword(fieldId) {
+        const passwordField = document.getElementById(fieldId);
+        const eyeIcon = passwordField.nextElementSibling;
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = "password";
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
+    }
+    function validatePasswords() {
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirmpassword').value;
+
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return false;
+        }
+        return true;
+    }
+    function validatePasswords() {
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirmpassword').value;
+
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return false;
+        }
+        return true;
+    }
+    function validateForm() {
+        let valid = true;
+
+        const usernameInput = document.getElementById('username');
+        if (usernameInput.value.length < 3) {
+            alert("Username must be at least 3 characters long");
+            valid = false;
+        }
+
+        const ageInput = document.getElementById('age');
+        const age = parseInt(ageInput.value);
+        if (isNaN(age) || age < 16 || age > 100) {
+            alert("Age must be between 16 and 100");
+            valid = false;
+        }
+
+        if (!validatePasswords()) {
+            valid = false;
+        }
+
+        return valid;
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            if (!validatePasswords()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Flairs</title>
+    <style>
+        *
+        {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 400px;
+            margin: 60px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.8em;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 128, 0, 0.1);
+        }
+
+        .dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            background-color: #fff;
+            cursor: pointer;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .dropdown-options {
+            display: none;
+            position: absolute;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .dropdown-options div {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-options div:hover {
+            background-color: #f4f4f4;
+        }
+
+        .dropdown-options input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #FF4500;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #FF5722;;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-bottom: 0.5px solid lightgray;
+            color: white;
+            padding: 10px 20px;
+            height: 50px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-left">
+        <img src="/logo/reddit.png" alt="Logo" class="logo">
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Select Flairs</h2>
+    <form th:action="@{/posts/createWithFlairs}" method="post">
+        <div class="form-group">
+            <label for="subReddit">Selected Subreddit:</label>
+            <input type="text" id="subReddit" name="subReddit" class="form-control" th:value="${selectedSubReddit}"
+                   readonly/>
+        </div>
+        <input type="hidden" name="postId" th:value="${postId}"/>
+        <div class="form-group dropdown-container">
+            <label>Select Flairs:</label>
+            <div class="dropdown-select" id="flairSelect">Select flairs</div>
+            <div class="dropdown-options" id="flairOptions">
+                <div th:each="flair : ${flairs}">
+                    <input type="checkbox" name="selectedFlairs" th:value="${flair.name}"/>
+                    <span th:text="${flair.name}">Flair</span>
+                </div>
+            </div>
+        </div>
+
+        <input type="submit" value="Submit"/>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const flairSelect = document.getElementById('flairSelect');
+        const flairOptions = document.getElementById('flairOptions');
+
+        flairSelect.addEventListener('click', function () {
+            flairOptions.style.display = flairOptions.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!flairSelect.contains(event.target) && !flairOptions.contains(event.target)) {
+                flairOptions.style.display = 'none';
+            }
+        });
+    });
+</script>
+</body>
+</html>

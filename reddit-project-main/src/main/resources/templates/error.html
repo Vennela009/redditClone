@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: white;
+            margin: 0;
+        }
+        .error-card {
+            background-color: #ffffff; /* White card */
+            color: #dc3545; /* Red text */
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        .error-card h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .error-card p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .error-card .icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .homepage-link {
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: #dc3545; /
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="error-card">
+    <div class="icon">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h1>Error</h1>
+    <p th:text="${errorMessage}">Something went wrong!</p>
+    <p>Please try again later.</p>
+    <a href="/" class="homepage-link">Go to Homepage</a>
+</div>
+</body>
+</html>

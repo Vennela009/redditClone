@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Post</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *
+        {
+            box-sizing:border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f7f8;
+            margin: 0;
+            padding: 0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            height:100vh;
+        }
+
+        .container {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            min-width: 30%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            width:100%;
+        }
+        form
+        {
+            width:100%;
+        }
+        .form-group input
+        {
+            width:100%;
+        }
+
+        .form-group label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .btn {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #e03e00;
+        }
+
+
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h2>
+        <img src="/logo/reddit.png" alt="Logo" class="logo">
+        Update
+    </h2>
+    <form th:action="@{/posts/{id}/updatePost(id=${post.postId})}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" class="form-control"
+                   th:value="${post.title}" required>
+        </div>
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea id="content" name="body" class="form-control" rows="5"
+                      th:text="${post.body}"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="image">Image or Video</label>
+            <input id="image" name="image" type="file" class="form-control"/>
+        </div>
+        <button type="submit" class="btn">
+            <img src="/logo/reddit.png" alt="Logo"
+                 style="width: 20px; height: auto; vertical-align: middle; margin-right: 5px;">
+            Update Post
+        </button>
+    </form>
+</div>
+</body>
+<script>
+    var simplemde = new SimpleMDE({ element: document.getElementById('content') });
+    document.querySelector("form").addEventListener("submit", function (event) {
+        simplemde.codemirror.save();
+    })
+</script>
+</html>

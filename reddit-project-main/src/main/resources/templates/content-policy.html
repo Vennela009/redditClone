@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Clone - Content Policy</title>
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #dae0e6;
+            color: #1c1c1c;
+        }
+
+        /* Header Section */
+        header {
+            background-color: #ff4500;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        /* Logo SVG Styling */
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+
+        /* Main Content Section */
+        main {
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        main h2 {
+            color: #1c1c1c;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        main p {
+            font-size: 16px;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        main ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        main ul li {
+            margin-bottom: 15px;
+        }
+
+        main ul li::before {
+            content: "•";
+            color: #ff4500;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        main ul li strong {
+            font-weight: bold;
+            color: #1c1c1c;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            padding: 10px;
+            background-color: #f6f7f8;
+            color: #777;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-bottom:0.5px solid lightgray;
+            color: white;
+            padding: 10px 20px;
+            height: 60px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-left, .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-right: 10px;
+        }
+        .site-name {
+            font-size: 1.5em;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-left">
+        <img src="/logo/reddit.png" alt="Logo" class="logo">
+        <span class="site-name">Reddit</span>
+    </div>
+    <div class="navbar-right">
+        <span style="font-size:30px;color:black;">Content Policy</span>
+    </div>
+</nav>
+
+<main style="position:relative;top:70px;">
+    <section class="intro">
+        <h2>Introduction</h2>
+        <p>Welcome to Reddit Clone! Our content policy is designed to foster healthy, safe, and engaging communities
+            where users can freely express themselves, while also maintaining respect for others. Please take a moment
+            to read through our content guidelines.</p>
+    </section>
+
+    <section class="general-rules">
+        <h2>General Rules</h2>
+        <ul>
+            <li><strong>Respect others:</strong> Harassment, hate speech, and personal attacks are not tolerated.</li>
+            <li><strong>No spam or self-promotion:</strong> Posts must contribute meaningfully to discussions. Avoid
+                posting spam, repetitive links, or self-promotion.
+            </li>
+            <li><strong>Follow the law:</strong> Content must adhere to local and international laws. Illegal content
+                will be removed and reported.
+            </li>
+            <li><strong>Protect privacy:</strong> Do not share personal information such as addresses, phone numbers, or
+                financial details.
+            </li>
+        </ul>
+    </section>
+
+    <section class="content-guidelines">
+        <h2>Content Guidelines</h2>
+        <p>These guidelines outline what type of content is appropriate and allowed on our platform:</p>
+        <ul>
+            <li><strong>No violent or abusive content:</strong> Posts promoting violence, abuse, or harm will be removed
+                immediately.
+            </li>
+            <li><strong>No misinformation:</strong> Avoid spreading false information or content that could mislead
+                others.
+            </li>
+            <li><strong>Respect intellectual property:</strong> Do not post content you don’t own or have rights to.
+            </li>
+            <li><strong>Adult content restrictions:</strong> Adult or graphic content must be labeled appropriately and
+                should only be posted in relevant communities.
+            </li>
+        </ul>
+    </section>
+
+    <section class="moderation">
+        <h2>Enforcement and Moderation</h2>
+        <p>Our moderation team is responsible for ensuring that the rules are followed. If you violate these rules, one
+            or more of the following actions may be taken:</p>
+        <ul>
+            <li>Issuing a warning.</li>
+            <li>Removing content.</li>
+            <li>Temporarily or permanently banning users.</li>
+            <li>Reporting violations to authorities, if necessary.</li>
+        </ul>
+    </section>
+
+    <section class="reporting">
+        <h2>Reporting Violations</h2>
+        <p>If you come across content that violates these guidelines, please report it to the moderators using the
+            report button. The moderation team will review and take appropriate action.</p>
+    </section>
+</main>
+</body>
+</html>
