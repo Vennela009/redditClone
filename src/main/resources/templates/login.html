@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <style>
+        *
+        {
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            height:100vh;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 8px;
+        }
+
+        .password-container {
+            position: relative; /* Ensure child elements are positioned relative to this container */
+            margin-bottom: 15px;
+        }
+
+        .password-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box; /* Ensure padding is included in width */
+        }
+
+        .password-container .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: black;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        <!-- label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }-->
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-bottom:0.5px solid lightgray;
+            color: white;
+            padding: 10px 20px;
+            height: 60px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-left, .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+
+        .site-name {
+            font-size: 1.5em;
+            margin-right: 20px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            background-color: #FF4500;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #FF5722;;
+        }
+
+        span {
+            color: red;
+            font-size: 12px;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+
+        div[th\\:if] {
+            color: red;
+            margin-bottom: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                width: 90%;
+            }
+        }
+        .container
+        {
+            top:100px;
+        }
+        .signup-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .sign-up-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .sign-up-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-left">
+        <img src="/logo/reddit.png" alt="Logo" class="logo">
+    </div>
+</nav>
+<div class="container">
+    <h2>Login Form</h2>
+    <form th:action="@{/authenticateTheUser}" method="POST">
+        <div th:if="${param.error}">
+            <i>Sorry! You entered invalid username/password.</i>
+        </div>
+        <div th:if="${param.logout}">
+            <i>You have been logged out.</i>
+        </div>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <br><br>
+        <div class="password-container">
+            <label for="password">Password:</label>
+            <div style="display:flex; align:items: center;">
+                <input type="password" id="password" name="password" required>
+                <i style="margin-top: 11px; " class="fas fa-eye toggle-password"
+                   onclick="togglePassword('password')"></i>
+            </div>
+
+        </div>
+        <br><br>
+        <input type="submit" value="LOGIN">
+    </form>
+    <div class="signup-link">
+        <p>Not a member? <a href="/user/new" class="sign-up-link">Sign Up</a></p>
+    </div>
+</div>
+<script>
+    function togglePassword(fieldId) {
+        const passwordField = document.getElementById(fieldId);
+        const eyeIcon = passwordField.nextElementSibling;
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = "password";
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
+    }
+</script>
+</body>
+</html>

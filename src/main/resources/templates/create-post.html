@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post</title>
+    <style>
+        *
+        {
+            box-sizing:border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .container {
+            width: 800px;
+            margin: 60px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.8em;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 128, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+
+        .file-input {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-select {
+            width: 100%;
+            height:45px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            background-color: #fff;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .dropdown-options {
+            display: none;
+            position: absolute;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            box-sizing: border-box;
+            color:black;
+        }
+
+        .dropdown-options div {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .dropdown-options div:hover {
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-bottom:0.5px solid lightgray;
+            color: white;
+            padding: 10px 20px;
+            height: 50px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-left, .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+
+        .site-name {
+            font-size: 1.5em;
+            margin-right: 20px;
+        }
+        input[type="submit"] {
+            background-color: #FF4500;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #FF5722;;
+        }
+        textarea#content {
+            visibility: hidden;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-left">
+        <img src="/logo/reddit.png" alt="Logo" class="logo">
+    </div>
+</nav>
+<div class="container">
+    <h2>Create New Post</h2>
+
+    <form th:action="@{/posts/createFirstPart}" method="post" enctype="multipart/form-data" class="post-form">
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" class="form-control" placeholder="Enter the title" required maxlength="300" oninput="checkLength(this)"/>
+            <small class="form-text text-muted">300 characters max</small>
+        </div>
+
+        <div class="form-group">
+            <label for="content">Content:</label>
+            <textarea id="content" name="body" class="form-control" placeholder="Enter your content here" rows="8" ></textarea>
+        </div>
+
+        <div class="form-group dropdown-container">
+            <label>Subreddit:</label>
+            <div class="dropdown-select" id="dropdownSelect">Select a subreddit</div>
+            <div class="dropdown-options" id="dropdownOptions">
+                <div th:each="subReddit : ${subRedditList}"
+                     th:data-value="${subReddit}"
+                     th:text="${subReddit}"
+                     class="dropdown-option"
+                     onclick="selectSubreddit(this)">
+                </div>
+            </div>
+            <input type="hidden" id="selectedSubReddit" name="subRedditName"/>
+
+            <span id="error" style="color: red; display: none;">Please select a subreddit</span>
+        </div>
+
+        <div class="form-group">
+            <label for="media">Image or Video</label>
+            <input type="file" id="media" name="media" class="file-input"/>
+        </div>
+
+        <input type="submit" value="Next"/>
+    </form>
+</div>
+
+<script>
+    var simplemde = new SimpleMDE({ element: document.getElementById('content') });
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownSelect = document.getElementById('dropdownSelect');
+        const dropdownOptions = document.getElementById('dropdownOptions');
+        const hiddenInput = document.getElementById('selectedSubReddit');
+
+        dropdownSelect.addEventListener('click', function(event) {
+            event.stopPropagation();
+            if (dropdownOptions.style.display === 'block') {
+                dropdownOptions.style.display = 'none';
+            } else {
+                dropdownOptions.style.display = 'block';
+            }
+        });
+
+
+        dropdownOptions.addEventListener('click', function(event) {
+            if (event.target.tagName === 'DIV') {
+                dropdownSelect.textContent = event.target.textContent;
+                hiddenInput.value = event.target.getAttribute('data-value'); // Set the hidden input's value
+                dropdownOptions.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!dropdownSelect.contains(event.target) && !dropdownOptions.contains(event.target)) {
+                dropdownOptions.style.display = 'none';
+            }
+        });
+    });
+
+    document.querySelector("form").addEventListener("submit", function (event) {
+        simplemde.codemirror.save();
+        const selectedSubReddit = document.getElementById("selectedSubReddit").value;
+
+        if (!selectedSubReddit) {
+            event.preventDefault();
+            document.getElementById("error").style.display = "block";
+            document.getElementById("dropdownSelect").focus();
+        } else {
+            document.getElementById("error").style.display = "none";
+        }
+    });
+    function checkLength(input) {
+        if (input.value.length > 300) {
+            input.value = input.value.substring(0, 300);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+
+        *
+        {
+            box-sizing: border-box;
+            margin:0;
+            padding:0;
+        }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-bottom:0.5px solid lightgray;
+            color: white;
+            padding: 10px 20px;
+            height: 60px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-left, .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-right
+        {
+            gap:5px;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .site-name {
+            font-size: 1.5em;
+            margin-right: 20px;
+        }
+        .search-bar-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 500px;
+        }
+
+        .search-bar {
+            padding: 10px 40px;
+            font-size: 1em;
+            border: 1px solid #D7DADC;
+            border-radius: 9999px;
+            width: 100%;
+            height: 40px;
+            background-color: #F6F7F8;
+            color: #1A1A1B;
+            outline: none;
+        }
+
+        .search-bar::placeholder {
+            color: #878A8C;
+        }
+
+        .search-bar-container .search-icon {
+            position: absolute;
+            left: 15px;
+            color: #878A8C;
+            font-size: 1.2em;
+            pointer-events: none;
+            top:50%;
+            transform:translateY(-50%);
+        }
+
+        .search-bar:focus {
+            border-color: #d7dadc;
+        }
+
+        .search-bar-container:hover .search-bar {
+            background-color: #FFF;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            height: calc(100vh - 50px);
+            position: fixed;
+            top: 50px;
+            left: 0;
+        }
+
+        .sidebar button {
+            display: block;
+            background-color: #FF4500;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .sidebar button:hover {
+            background-color: #E03E00;
+        }
+
+        .community-list {
+            margin-top: 20px;
+        }
+        .community-list h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .community-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .community-list li {
+            background:white;
+            display:flex;
+            align-items: center;
+            justify-content:center;
+            gap:10px;
+            border-radius: 4px;
+            padding: 2px;
+            font-size: 0.9em;
+            margin-bottom:5px;
+        }
+
+        .content {
+            margin: 60px auto 0;
+            padding: 20px;
+            width:100%;
+            height: calc(100vh - 50px);
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            box-sizing: border-box;
+            transition: width 0.3s ease;
+        }
+
+        .post-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .post-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .post-card:hover {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .post-card h3 {
+            margin-top: 0;
+            font-size: 1.25em;
+        }
+
+        .post-card p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+
+        .no-posts {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 1.2em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .new-subreddit-name-input,
+        .new-subreddit-description-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .new-subreddit-submit-btn {
+            background-color: #FF4500;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .new-subreddit-submit-btn:hover {
+            background-color:#E03E00;
+        }
+
+        .post-image {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .post-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+
+        @media (max-width: 600px) {
+            .post-container {
+                width: 100%;
+            }
+        }
+        .post-banner {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            justify-content: space-between; /* Ensures spacing between elements */
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .subreddit-details {
+            flex: 1;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .subreddit-details h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #1e1e1e;
+            font-weight: 500;
+        }
+
+        .subreddit-details h6 {
+            margin: 0;
+            font-size: 12px;
+            color: #6a6a6a;
+        }
+
+
+        .user-details {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor:pointer;
+        }
+
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-details span {
+            font-size: 14px;
+            color: #1e1e1e;
+        }
+
+        .menu-icon {
+            font-size: 1.5em;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #createPostBtn {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            color: #1a1a1b;
+            padding: 8px 16px;
+            border: 1px solid #d3d3d3;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        #createPostBtn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .create-post-link {
+            text-decoration: none;
+        }
+        .sidebar-link button {
+            background: none;
+            border: none;
+            color: #1a1a1b;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .left-div a {
+            text-decoration: none;
+        }
+        .sidebar-link button:hover {
+            background-color: #e5e5e5;
+        }
+        .sidebar-link i {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        #myBtn {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #d7dadc;
+            color: #1a1a1b;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        #myBtn i {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        #myBtn:hover {
+            background-color: #c1c4c6;
+        }
+        .post-interactions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+        }
+
+        .vote-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vote-buttons i {
+            font-size: 20px;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .vote-buttons i:hover {
+            color: #ff4500;
+        }
+
+        .vote-count {
+            font-size: 16px;
+            color: #333;
+        }
+        .view-comment ,.view-post{
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #1e1e1e;
+            font-size: 14px;
+            border: 1px solid #d0d0d0;
+            border-radius: 15px;
+            padding: 4px 8px;
+            background-color: #f6f7f8;
+            transition: background-color 0.3s, border-color 0.3s;
+            cursor:pointer;
+        }
+
+        .view-comment i {
+            margin-right: 8px;
+            font-size: 16px;
+            color: #1e1e1e;
+        }
+
+        .view-comment:hover,.view-post:hover {
+            background-color: #e2e2e2;
+            border-color: #b0b0b0;
+            color: #1e1e1e;
+        }
+
+        .view-comment:hover i {
+            color: #1e1e1e;
+        }
+        .resources-section h3 {
+            color: #1a1a1b;
+            font-size: 18px;
+            padding-bottom: 5px;
+        }
+
+        .resources-section hr {
+            border: 0;
+            height: 1px;
+            background-color: lightgray;
+            margin-bottom: 10px;
+        }
+
+        .resources-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            text-decoration: none;
+            color: #1a1a1b;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .resource-link:hover {
+            background-color: #e5e5e5;
+        }
+
+        .resource-link i {
+            margin-right: 8px;
+            font-size: 20px;
+            color: #1a1a1b;
+        }
+        #loginBtn {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #loginBtn:hover {
+            background-color: #c43703;
+        }
+
+
+        .navbar-right .login-link {
+            margin-left: 10px;
+            text-decoration: none;
+        }
+
+        .navbar-right .login-link button {
+            display: flex;
+            align-items: center;
+        }
+        .upvote.orange {
+            color: #ff4500;
+        }
+        .downvote.blue {
+            color: blue;
+        }
+        .sort-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sort-button {
+            padding: 10px;
+            background-color: #f6f7f8;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .top-dropdown {
+            position: relative;
+        }
+
+        .top-button {
+            background: none;
+            border: none;
+            padding: 12px 16px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+
+        .top-options {
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .community-list-container
+        {
+            height:270px;
+            overflow-y:scroll;
+        }
+        .profile-card {
+            position: absolute;
+            right: 0;
+            top: 60px;
+            width: 200px;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dfe1e5;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 10;
+        }
+
+        .profile-card a {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #1a1a1b;
+            font-weight: bold;
+        }
+
+        .profile-card .logout-link {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-card .logout-link i {
+            margin-right: 8px;
+        }
+
+        .profile-card .close-icon {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        #avatar:hover + #profileCard {
+            display: block;
+        }
+
+        #closeProfileCard:hover {
+            color: #555;
+        }
+
+        .user-avatar {
+            cursor: pointer;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .right-sidebar {
+            position: fixed;
+            padding-top:20px;
+            top: 55px;
+            right: 0;
+            height: 100%;
+            width: 0;
+            background-color: white;
+            overflow: hidden;
+            transition: width 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+        }
+
+        .community-list-container {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .community-list-container li {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .community-link {
+            text-decoration: none;
+            color: #333;
+            margin-left: 10px;
+        }
+
+        .community-link:hover {
+            color: #0079d3;
+        }
+
+        .sidebar-avatar {
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .close-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 50px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        #subredditName {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+
+        #subredditDescription {
+            margin: 10px 0;
+        }
+
+        .subreddit-rules {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .subreddit-rules li {
+            margin: 10px 0;
+        }
+        .view-posts-button {
+            margin-top: 10px;
+            width: 80%;
+            background-color: #28a745;
+            color: white;
+            border: none;
+
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-posts-button:hover {
+            background-color: #218838;
+        }
+        .flairsString
+        {
+            margin-top:5px;
+            margin-bottom:15px;
+            display:flex;
+            flex-direction:column;
+        }
+        .flairsString input
+        {
+            margin-top:5px;
+            height:40px;
+            border-radius:4px;
+            border:1px solid #ccc;
+            padding:0 10px;
+            font-size: 1em;
+        }
+        .share-box {
+            position: fixed;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 1000;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            text-align: center;
+        }
+        .share-box input {
+            width: 200px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .share-box button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background-color:  #f6f7f8;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .share-box .close-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .share-box .close-btn i {
+            font-size:20px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-left">
+        <img src="/logo/reddit.png" alt="Logo" class="logo">
+        <span class="site-name">Reddit</span>
+    </div>
+    <div class="navbar-center">
+        <form th:action="@{/}" method="GET">
+            <div class="search-bar-container">
+                <input type="text" name="search" class="search-bar" placeholder="Search Reddit" required>
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search search-icon"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="navbar-right">
+        <div sec:authorize="isAuthenticated()">
+            <div th:if="${subReddits != null and !subReddits.isEmpty()}">
+                <a href="/posts/new" class="create-post-link">
+                    <button id="createPostBtn">
+                        <div class="icon-circle" style="margin-right:3px;">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        Create Post
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div sec:authorize="isAuthenticated()" style="display:flex; align-items:center;margin-left:15px;margin-right:5px;">
+            <a href="/chat">
+            <button id="chatIcon" class="chat-icon"
+                    style="background-color:transparent; border:none; cursor:pointer; font-size:24px;">
+                <i class="fas fa-message"></i>
+            </button>
+            </a>
+        </div>
+
+        <div sec:authorize="isAnonymous()" style="display:flex;align-items:center;justify-content:center;">
+            <a href="/showLoginPage" class="login-link">
+                <button id="loginBtn">
+                    Log In
+                </button>
+            </a>
+        </div>
+        <div sec:authorize="isAuthenticated()"
+             style="display:flex;align-items:center;justify-content:center; position: relative;">
+            <img th:src="${user.avatar}" alt="User Avatar" class="user-avatar" id="avatar"
+                 style="height: 50px; width: 50px; border-radius: 50%;object-fit: cover;">
+            <span class="user-name" style="margin-left: 10px; font-size: 15px; color: #333;cursor:pointer">
+                <span th:text="${user.username}">Username</span>
+            </span>
+
+            <div id="profileCard" class="profile-card">
+                <div class="close-icon" id="closeProfileCard">&times;</div>
+                <a href="/user/profile" class="profile-link">My Profile</a>
+                <a href="/logout" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="sidebar">
+    <div class="left-div">
+        <a href="/" class="sidebar-link">
+            <button><i class="fas fa-globe"></i> All</button>
+        </a>
+        <a th:href="@{/(userPost = true)}" class="sidebar-link" sec:authorize="isAuthenticated()">
+            <button><i class="fas fa-home"></i> My Posts</button>
+        </a>
+        <a href="/" th:href="@{/(sort='top_month')}" class="sidebar-link">
+            <button><i class="fas fa-star"></i> Popular</button>
+        </a>
+        <a href="/" th:href="@{/ (myFeed='true')}" class="sidebar-link" sec:authorize="isAuthenticated()">
+            <button><i class="fas fa-plus"></i>My Feed</button>
+        </a>
+
+    </div>
+    <div class="community-list">
+        <h3>Communities</h3>
+        <hr>
+        <div sec:authorize="isAuthenticated()">
+            <button id="myBtn">
+                <i class="fas fa-plus"></i> Create Community
+            </button>
+        </div>
+
+        <ul class="community-list-container">
+            <li th:each="subReddit : ${subReddits}" class="particular-avatar">
+                <img th:src="${subReddit.avatar}" alt="Avatar" class="community-avatar"
+                     style="height: 50px; border-radius: 50%; object-fit: cover;"/>
+                <a href="#" class="community-link" th:data-name="${subReddit.name}" th:data-avatar="${subReddit.avatar}"
+                   th:data-description="${subReddit.description}">
+                    <span th:text="${subReddit.name}">Community Name</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="resources-section">
+        <h3>Resources</h3>
+        <hr>
+        <ul class="resources-list">
+            <li>
+                <a href="/about-reddit" class="resource-link">
+                    <i class="fas fa-info-circle"></i> About Reddit
+                </a>
+            </li>
+            <li>
+                <a href="/content-policy" class="resource-link">
+                    <i class="fas fa-file-alt"></i> Content Policy
+                </a>
+            </li>
+            <li>
+                <a href="/privacy-policy" class="resource-link">
+                    <i class="fas fa-user-shield"></i> Privacy Policy
+                </a>
+            </li>
+            <li>
+                <a href="/user-agreement" class="resource-link">
+                    <i class="fas fa-handshake"></i> User Agreement
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<main class="content">
+    <div class="post-container">
+        <div class="sort-dropdown">
+            <button class="sort-button">Sort by</button>
+            <div class="dropdown-content" style="display: none;">
+                <a th:href="@{/(sort='new')}">New</a>
+                <a th:href="@{/(sort='old')}">Old</a>
+                <div class="top-dropdown">
+                    <button class="top-button">Top</button>
+                    <div class="top-options" style="display:none;">
+                        <a th:href="@{/(sort='top_week')}">This Week</a>
+                        <a th:href="@{/(sort='top_day')}">Today</a>
+                        <a th:href="@{/(sort='top_month')}">This Month</a>
+                        <a th:href="@{/(sort='top_hour')}">This Hour</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(posts)}" class="no-posts">
+            <p>No posts available.</p>
+        </div>
+<!--        first part-->
+        <div th:if="${!#lists.isEmpty(posts)}">
+            <div th:each="post : ${posts.?[isPinned]}" class="post-card">
+                <div class="post-banner">
+                    <a th:href="@{/(subRedditName=${post.subReddit.name})}">
+                        <img th:src="${post.subReddit.avatar}" alt="Subreddit Avatar" class="avatar"/>
+                    </a>
+                    <div class="subreddit-details">
+                        <h3 th:text="${post.subReddit.name}">Subreddit Name</h3>
+                        <h6 th:text="${post.relativeTime}">Relative Time</h6>
+                    </div>
+                    <div th:if="${post.isPinned && !post.admin}">
+                        <i class="fas fa-thumbtack" title="Pinned"
+                           style="color: #FF4500;margin-right:10px;margin-bottom:-10px; transform: rotate(30deg);"></i>
+                    </div>
+                    <div th:if="${post.subscribed && !post.admin}" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/user/leave}" method="post"
+                              style="display: inline-block; margin-right: 10px;">
+                            <input type="hidden" name="name" th:value="${post.subReddit.name}"/>
+                            <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 8px 16px;
+                                      border-radius: 4px; cursor: pointer; font-size: 14px;">
+                                Joined
+                            </button>
+                        </form>
+                    </div>
+
+                    <div th:if="${!post.subscribed && !post.admin}" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/user/join}" method="post"
+                              style="display: inline-block; margin-right: 10px;">
+                            <input type="hidden" name="name" th:value="${post.subReddit.name}"/>
+                            <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 8px 16px;
+                                      border-radius: 4px; cursor: pointer; font-size: 14px;">
+                                Join
+                            </button>
+                        </form>
+                    </div>
+
+                    <div th:if="${post.admin}" sec:authorize="isAuthenticated()" style="display:flex;align-items:center; justify-content:center;">
+                        <div>
+                            <form th:action="@{/posts/pin}" method="post" th:if="${post.isPinned}" style="display:flex;align-items:center;justify-content:center;">
+                                <input type="hidden" name="isPin" value="false"/>
+                                <input type="hidden" name="postId" th:value="${post.postId}"/>
+                                <i class="fas fa-thumbtack" title="Pinned"
+                                   style="color: #FF4500;transform: rotate(30deg);margin-right: 5px;"></i>
+                                <input type="submit" value="Unpin"
+                                       style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                            </form>
+                        </div>
+<!--                        <div>-->
+<!--                            <a style="background-color: #ffc107; color: white; padding: 8px 16px; border-radius: 4px;margin-left:10px;-->
+<!--                            text-decoration: none; font-size: 14px;">-->
+<!--                                Admin-->
+<!--                            </a>-->
+<!--                        </div>-->
+
+                    </div>
+                    <span th:if="${user != null}">
+    <a th:if="${user.username == post.user.username}" th:href="@{/user/profile}">
+        <div class="user-details">
+            <img th:src="${post.user.avatar}" alt="User Avatar" class="user-avatar"/>
+            <span th:text="${post.user.username}">Username</span>
+        </div>
+    </a>
+    <span th:if="${user.username != post.user.username}">
+        <div class="user-details">
+            <img th:src="${post.user.avatar}" alt="User Avatar" class="user-avatar"/>
+            <span th:text="${post.user.username}">Username</span>
+        </div>
+    </span>
+</span>
+                    <span th:if="${user == null}">
+    <div class="user-details">
+        <img th:src="${post.user.avatar}" alt="User Avatar" class="user-avatar"/>
+        <span th:text="${post.user.username}">Username</span>
+    </div>
+</span>
+                </div>
+                <h3 th:text="${post.title}">Post Title</h3>
+                <div th:if="${post.mediaUrl != null}">
+                    <div th:if="${post.mediaType == 'image'}">
+                        <img th:src="${post.mediaUrl}" alt="Uploaded Image"
+                             style="max-width: 100%; height: auto; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin: 10px 0;"/>
+                    </div>
+                    <div th:if="${post.mediaType == 'video'}">
+                        <video controls
+                               style="max-width: 100%; height: auto; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin: 10px 0;">
+                            <source th:src="${post.mediaUrl}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <div class="post-interactions">
+                    <div class="vote-buttons">
+
+                        <form sec:authorize="isAuthenticated()"
+                              th:action="@{/posts/{postId}/voteDecider(postId=${post.postId}, voteType='up')}"
+                              method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none;">
+                                <i class="fas fa-caret-up upvote"
+                                   th:classappend="${post.userUpvoted} ? 'orange' : ''" title="Upvote"></i>
+                            </button>
+                        </form>
+
+                        <form sec:authorize="!isAuthenticated()"
+                              th:action="@{/login}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none;">
+                                <i class="fas fa-caret-up upvote" title="Login to upvote"></i>
+                            </button>
+                        </form>
+
+                        <span class="vote-count" th:text="${post.totalVotes}">0</span>
+
+                        <form sec:authorize="isAuthenticated()"
+                              th:action="@{/posts/{postId}/voteDecider(postId=${post.postId}, voteType='down')}"
+                              method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none;">
+                                <i class="fas fa-caret-down downvote"
+                                   th:classappend="${post.userDownvoted} ? 'blue' : ''" title="Downvote"></i>
+                            </button>
+                        </form>
+
+                        <form sec:authorize="!isAuthenticated()"
+                              th:action="@{/login}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none;">
+                                <i class="fas fa-caret-down downvote" title="Login to downvote"></i>
+                            </button>
+                        </form>
+
+                    </div>
+
+                    <a th:href="@{/posts/{id}(id=${post.postId})}" class="view-post">View Post</a>
+                    <a th:href="@{/posts/{id}(id=${post.postId})}" class="view-comment">
+                        <i class="fas fa-comment" title="Comment"></i> comment
+                    </a>
+                    <a href="javascript:void(0);" class="share-link" th:data-post-id="${post.postId}">
+                        <i class="fas fa-share-alt" title="Share"></i> Share
+                    </a>
+                    <div th:id="'share-box-' + ${post.postId}" class="share-box" style="display:none;">
+                        <button class="close-btn" th:onclick="'closeShareBox(' + ${post.postId} + ')'">
+                            <i class="fas fa-times" style="color:black;"></i>
+                        </button>
+                        <input type="text"   th:value="${baseUrl} + '/posts/'+ ${post.postId}"
+                               th:id="'share-link-'+${post.postId}" readonly>
+                        <button th:onclick="'copyToClipboard(' + ${post.postId} + ')'">
+                            <i class="fas fa-copy" style="color:black;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+<!--            Second part-->
+            <div th:each="post : ${posts.?[!isPinned]}" class="post-card">
+                <div class="post-banner">
+                    <a th:href="@{/(subRedditName=${post.subReddit.name})}">
+                        <img th:src="${post.subReddit.avatar}" alt="Subreddit Avatar" class="avatar"/>
+                    </a>
+                    <div class="subreddit-details">
+                        <h3 th:text="${post.subReddit.name}">Subreddit Name</h3>
+                        <h6 th:text="${post.relativeTime}">Relative Time</h6>
+                    </div>
+                    <div th:if="${post.subscribed && !post.admin}" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/user/leave}" method="post"
+                              style="display: inline-block; margin-right: 10px;">
+                            <input type="hidden" name="name" th:value="${post.subReddit.name}"/>
+                            <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 8px 16px;
+                                      border-radius: 4px; cursor: pointer; font-size: 14px;">
+                                Joined
+                            </button>
+                        </form>
+                    </div>
+
+                    <div th:if="${!post.subscribed && !post.admin}" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/user/join}" method="post"
+                              style="display: inline-block; margin-right: 10px;">
+                            <input type="hidden" name="name" th:value="${post.subReddit.name}"/>
+                            <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 8px 16px;
+                                      border-radius: 4px; cursor: pointer; font-size: 14px;">
+                                Join
+                            </button>
+                        </form>
+                    </div>
+
+                    <div th:if="${post.admin}" sec:authorize="isAuthenticated()" style="display:flex;align-items:center;justify-content:center">
+
+                        <div>
+                            <form th:action="@{/posts/pin}" method="post" th:if="${!post.isPinned}" style="display:flex;align-items:center;justify-content:center;">
+                                <input type="hidden" name="isPin" value="true"/>
+                                <input type="hidden" name="postId" th:value="${post.postId}"/>
+<!--                                <i class="fas fa-thumbtack" title="Pinned" style="color:black; transform: rotate(-30deg); margin-right: 5px;"></i>-->
+                                <input type="submit" value="Pin" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                            </form>
+                        </div>
+<!--                        <div>-->
+<!--                            <a style="background-color: #ffc107; color: white; padding: 8px 16px; border-radius: 4px;-->
+<!--                            text-decoration: none; margin-left:10px; font-size: 14px;">-->
+<!--                                Admin-->
+<!--                            </a>-->
+<!--                        </div>-->
+
+                    </div>
+                    <span th:if="${user != null}">
+    <a th:if="${user.username == post.user.username}" th:href="@{/user/profile}">
+        <div class="user-details">
+            <img th:src="${post.user.avatar}" alt="User Avatar" class="user-avatar"/>
+            <span th:text="${post.user.username}">Username</span>
+        </div>
+    </a>
+    <span th:if="${user.username != post.user.username}">
+        <div class="user-details">
+            <img th:src="${post.user.avatar}" alt="User Avatar" class="user-avatar"/>
+            <span th:text="${post.user.username}">Username</span>
+        </div>
+    </span>
+</span>
+                    <span th:if="${user == null}">
+    <div class="user-details">
+        <img th:src="${post.user.avatar}" alt="User Avatar" class="user-avatar"/>
+        <span th:text="${post.user.username}">Username</span>
+    </div>
+</span>
+                </div>
+                <h3 th:text="${post.title}">Post Title</h3>
+                <div th:if="${post.mediaUrl != null}">
+                    <div th:if="${post.mediaType == 'image'}">
+                        <img th:src="${post.mediaUrl}" alt="Uploaded Image"
+                             style="max-width: 100%; height: auto; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin: 10px 0;"/>
+                    </div>
+                    <div th:if="${post.mediaType == 'video'}">
+                        <video controls
+                               style="max-width: 100%; height: auto; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin: 10px 0;">
+                            <source th:src="${post.mediaUrl}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <div class="post-interactions">
+                    <div class="vote-buttons">
+
+                        <form sec:authorize="isAuthenticated()"
+                              th:action="@{/posts/{postId}/voteDecider(postId=${post.postId}, voteType='up')}"
+                              method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none;">
+                                <i class="fas fa-caret-up upvote"
+                                   th:classappend="${post.userUpvoted} ? 'orange' : ''" title="Upvote"></i>
+                            </button>
+                        </form>
+
+                        <form sec:authorize="!isAuthenticated()"
+                              th:action="@{/login}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none;">
+                                <i class="fas fa-caret-up upvote" title="Login to upvote"></i>
+                            </button>
+                        </form>
+
+                        <span class="vote-count" th:text="${post.totalVotes}">0</span>
+
+                        <form sec:authorize="isAuthenticated()"
+                              th:action="@{/posts/{postId}/voteDecider(postId=${post.postId}, voteType='down')}"
+                              method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none;">
+                                <i class="fas fa-caret-down downvote"
+                                   th:classappend="${post.userDownvoted} ? 'blue' : ''" title="Downvote"></i>
+                            </button>
+                        </form>
+
+                        <form sec:authorize="!isAuthenticated()"
+                              th:action="@{/login}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none;">
+                                <i class="fas fa-caret-down downvote" title="Login to downvote"></i>
+                            </button>
+                        </form>
+
+                    </div>
+
+                    <a th:href="@{/posts/{id}(id=${post.postId})}" class="view-post">View Post</a>
+                    <a th:href="@{/posts/{id}(id=${post.postId})}" class="view-comment">
+                        <i class="fas fa-comment" title="Comment"></i> comment
+                    </a>
+                    <a href="javascript:void(0);" class="share-link" th:data-post-id="${post.postId}">
+                        <i class="fas fa-share-alt" title="Share"></i> Share
+                    </a>
+                    <div th:id="'share-box-' + ${post.postId}" class="share-box" style="display:none;">
+                        <button class="close-btn" th:onclick="'closeShareBox(' + ${post.postId} + ')'">
+                            <i class="fas fa-times" style="color:black;"></i>
+                        </button>
+                        <input type="text"  th:value="${baseUrl} + '/posts/'+ ${post.postId}"
+                               th:id="'share-link-'+${post.postId}" readonly>
+                        <button th:onclick="'copyToClipboard(' + ${post.postId} + ')'">
+                            <i class="fas fa-copy" style="color:black;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 style="color:#81dcbc;text-align:center;">Create a Community</h3>
+        <p>Build and grow a community about something you care about. We'll help you set things up.</p>
+        <form id="newSubRedditForm" th:object="${subReddit}" action="/sub/new" method="post"
+              onsubmit="return validateSubRedditName()">
+            <input type="text" id="newSubRedditName" name="newSubRedditName" th:field="*{name}"
+                   placeholder="Subreddit Name"
+                   class="new-subreddit-name-input" minlength="3" maxlength="30" required><br><br>
+            <textarea th:field="*{description}" id="newSubRedditDescription" name="newSubRedditDescription"
+                      placeholder="Community Description"
+                      class="new-subreddit-description-input" rows="4" maxlength="500"></textarea><br><br>
+            <p><span id="subredditNameError" style="color: red;"></span></p>
+
+            <div class="flairsString">
+                <label for="flairsString">Enter Flairs</label>
+                <input type="text" placeholder="Enter flairs(comma Seperated)" id="flairsString" name="flairsString"/>
+            </div>
+            <strong>Some Rules for making a new community</strong>
+            <ul style="padding-left:15px;margin-bottom:15px;margin-top:15px;">
+                <li>SubReddit Name must be unique</li>
+                <li>SubReddit Name must only have alphabets</li>
+                <li>Name should give some idea on what subreddit is about</li>
+                <li>To share explicit content kindly contact the admin</li>
+                <li>You can add other specifications once you enter your subreddit</li>
+            </ul>
+            <button class="new-subreddit-submit-btn" type="submit">Submit</button>
+            <br><br>
+        </form>
+    </div>
+</div>
+<div id="communitySidebar" class="right-sidebar">
+    <button class="close-btn" id="closeSidebar">&times;</button>
+    <img id="subredditAvatar" alt="Subreddit Avatar" class="sidebar-avatar"
+         style="height: 50px; width: 50px; border-radius: 50%;object-fit: cover;"/>
+    <h3 id="subredditName">Community Name</h3>
+    <p id="subredditDescription">Community Description</p>
+    <h4>Rules</h4>
+    <ul class="subreddit-rules">
+        <li>Rule 1: <strong>Be respectful</strong></li>
+        <li>Rule 2:<strong>No spam or self-promotion</strong></li>
+        <li>Rule 3: <strong>No hate speech</strong></li>
+        <li>Rule 4:<strong> Keep it relevant</strong></li>
+        <li>Rule 5: <strong>No illegal content</strong></li>
+        <li>Rule 6:<strong> No NSFW content</strong></li>
+        <li>Rule 7:<strong>No personal attacks</strong></li>
+        <li>Rule 8: <strong>Follow Reddiquette</strong></li>
+        <li>Rule 9: <strong>No excessive self-promotion</strong></li>
+        <li>Rule 10: <strong>Use appropriate flair</strong></li>
+    </ul>
+    <div style="display:flex;align-items:center;justify-content:center">
+        <a id="viewPostsLink" href="#" class="view-posts-button">View Community Posts</a>
+    </div>
+</div>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.sort-button').addEventListener('click', toggleDropdown);
+
+        document.querySelector('.top-button').addEventListener('click', function(event) {
+            toggleTopOptions(event);
+        });
+
+        window.addEventListener('click', function(event) {
+            const dropdownContent = document.querySelector('.dropdown-content');
+            const topOptions = document.querySelector('.top-options');
+
+            if (!event.target.matches('.sort-button')) {
+                if (dropdownContent.style.display === 'block') {
+                    dropdownContent.style.display = 'none';
+                }
+            }
+
+            if (!event.target.matches('.top-button')) {
+                if (topOptions.style.display === 'block') {
+                    topOptions.style.display = 'none';
+                }
+            }
+        });
+    });
+
+    function toggleDropdown() {
+        const dropdownContent = document.querySelector('.dropdown-content');
+        dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function toggleTopOptions(event) {
+        event.stopPropagation();
+        const topOptions = document.querySelector('.top-options');
+        topOptions.style.display = (topOptions.style.display === 'block') ? 'none' : 'block';
+    }
+
+    document.querySelectorAll('.share-link').forEach(function(shareLink) {
+        shareLink.addEventListener('click', function() {
+            var postId = this.getAttribute('data-post-id');
+            var shareBox = document.getElementById('share-box-' + postId);
+
+            if (shareBox.style.display === 'none') {
+                shareBox.style.display = 'block';
+            } else {
+                shareBox.style.display = 'none';
+            }
+        });
+    });
+    function closeShareBox(postId) {
+        var shareBox = document.getElementById('share-box-' + postId);
+        shareBox.style.display = 'none';
+    }
+
+    function copyToClipboard(postId) {
+        var copyText = document.getElementById('share-link-' + postId);
+
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+
+        alert("Copied to clipboard: " + copyText.value);
+    }
+
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("myBtn");
+    var createPostBtn = document.getElementById("createPostBtn");
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+    /*<![CDATA[*/
+    var previousSubRedditNames = /*[[${subRedditNamesList}]]*/ [];
+    function validateSubRedditName() {
+        var newSubRedditName = document.getElementById("newSubRedditName").value;
+
+        if (previousSubRedditNames.includes(newSubRedditName)) {
+            document.getElementById("subredditNameError").innerText = "Subreddit name already exists!";
+            return false;
+        }
+        return true;
+    }
+
+    /*]]>*/
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const closeSidebarButton = document.getElementById('closeSidebar');
+        const communitySidebar = document.getElementById('communitySidebar');
+
+        if (closeSidebarButton) {
+            closeSidebarButton.addEventListener('click', function() {
+                communitySidebar.style.width = '0';
+            });
+        } else {
+            console.error("Close sidebar button not found!");
+        }
+
+        document.querySelectorAll('.community-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const avatar = this.getAttribute('data-avatar');
+                const name = this.getAttribute('data-name');
+                const description = this.getAttribute('data-description');
+
+                document.getElementById('subredditAvatar').src = avatar;
+                document.getElementById('subredditName').textContent = name;
+                document.getElementById('subredditDescription').textContent = description;
+
+                const viewPostsLink = document.getElementById('viewPostsLink');
+                viewPostsLink.setAttribute('href', `/?subRedditName=${name}`);
+
+                communitySidebar.style.width = '250px';
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const avatar = document.getElementById("avatar");
+        const userName = document.querySelector(".user-name");
+        const profileCard = document.getElementById("profileCard");
+
+        if (avatar) {
+            avatar.addEventListener("click", function() {
+                toggleProfileCard();
+            });
+        }
+
+        if (userName) {
+            userName.addEventListener("click", function() {
+                toggleProfileCard();
+            });
+        }
+
+        window.addEventListener("click", function(e) {
+            if (profileCard && !profileCard.contains(e.target) && !avatar.contains(e.target) && !userName.contains(e.target)) {
+                profileCard.style.display = "none";
+            }
+        });
+
+        function toggleProfileCard() {
+            if (profileCard) {
+                if (profileCard.style.display === "none" || profileCard.style.display === "") {
+                    profileCard.style.display = "block";
+                } else {
+                    profileCard.style.display = "none";
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
